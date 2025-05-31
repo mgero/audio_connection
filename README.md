@@ -3,7 +3,7 @@
 This repository shows how to route audio between two Python programs on macOS using the
 [BlackHole 16ch](https://existential.audio/blackhole/) virtual driver.
 The **sender** generates white noise and writes it to BlackHole. The **receiver**
-reads from the same device, applies a 1 kHz low‑pass filter and plays the result on
+reads from the same device, applies a configurable low‑pass filter and plays the result on
 the system output.
 
 ## Requirements
@@ -33,10 +33,31 @@ The sender also writes the noise to the output device named `BlackHole 16ch` if 
 Start the receiver to listen for the incoming audio stream and play it:
 
 ```bash
-python receiver.py --port 50007 --device "BlackHole 16ch"
+python receiver.py
 ```
 
-Specify another device name with `--device` to use a different output device.
+#### Receiver Options
+
+- `--input-device`: Specify the input device name (default: "BlackHole 16ch")
+- `--output-device`: Specify the output device name (default: system default)
+- `--cutoff`: Set the low-pass filter cutoff frequency in Hz (default: 1000.0)
+
+#### Examples
+
+Use default settings (BlackHole 16ch input, 1000 Hz cutoff):
+```bash
+python receiver.py
+```
+
+Specify a custom cutoff frequency:
+```bash
+python receiver.py --cutoff 500
+```
+
+Use different input/output devices with custom filter:
+```bash
+python receiver.py --input-device "My Input" --output-device "My Output" --cutoff 2000
+```
 
 ## Configuring Audio MIDI Setup (macOS)
 
@@ -47,5 +68,4 @@ have it, you can skip installation. Otherwise you can download it from
 1. Open **Audio MIDI Setup** from `Applications → Utilities`.
 2. Select `BlackHole 16ch` in the device list.
 3. Set the format to **44100.0 Hz** and **2ch-16 bit Integer**.
-4. Optionally create a multi-output device if you also want to monitor the
-
+4. Optionally create a multi-output device if you also want to monitor the audio output.

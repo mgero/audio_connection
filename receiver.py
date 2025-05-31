@@ -7,7 +7,7 @@ CHUNK = 1024
 CHANNELS = 2
 RATE = 44100
 FORMAT = pyaudio.paInt16
-CUTOFF = 1000.0
+DEFAULT_CUTOFF = 1000.0
 INPUT_DEVICE = "BlackHole 16ch"
 OUTPUT_DEVICE = None  # default system output
 
@@ -23,7 +23,7 @@ def find_device_index(pa, name, input=False):
     return None
 
 
-def lowpass_filter(block, state, rate=RATE, cutoff=CUTOFF):
+def lowpass_filter(block, state, rate=RATE, cutoff=DEFAULT_CUTOFF):
     """Apply a simple first-order low-pass filter."""
     dt = 1.0 / rate
     rc = 1.0 / (2 * np.pi * cutoff)
@@ -44,6 +44,7 @@ def main():
     parser = argparse.ArgumentParser(description="Receive and filter audio from BlackHole")
     parser.add_argument("--input-device", default=INPUT_DEVICE, help="Input device name")
     parser.add_argument("--output-device", default=OUTPUT_DEVICE, help="Output device name (default system output)")
+    parser.add_argument("--cutoff", type=float, default=DEFAULT_CUTOFF, help=f"Low-pass filter cutoff frequency in Hz (default: {DEFAULT_CUTOFF})")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -78,12 +79,12 @@ def main():
     )
 
     state = np.zeros(CHANNELS, dtype=np.float32)
-    logging.info("Capturing from '%s' and playing with low-pass filter", args.input_device)
+    logging.info("Capturing from '%s' and playing with low-pass filter (cutoff: %.1f Hz)", args.input_device, args.cutoff)
     try:
         while True:
             data = in_stream.read(CHUNK, exception_on_overflow=False)
             block = np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS).astype(np.float32)
-            filtered, state = lowpass_filter(block, state)
+            filtered, state = lowpass_filter(block, state, cutoff=args.cutoff)
             out_stream.write(filtered.tobytes())
     except KeyboardInterrupt:
         logging.info("Interrupted by user")
