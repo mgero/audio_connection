@@ -9,7 +9,6 @@ RATE = 44100
 FORMAT = pyaudio.paInt16
 DEVICE_NAME = "BlackHole 16ch"
 
-
 def find_device_index(pa, name):
     """Return the index of the output device matching name."""
     for i in range(pa.get_device_count()):
@@ -47,11 +46,12 @@ def main():
             stream.write(noise)
     except KeyboardInterrupt:
         logging.info("Interrupted by user")
+
     finally:
         stream.stop_stream()
         stream.close()
         pa.terminate()
 
-
 if __name__ == "__main__":
     main()
+

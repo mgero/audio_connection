@@ -9,32 +9,43 @@ the system output.
 ## Requirements
 
 - Python 3
-- `pyaudio` and `numpy` installed (`pip install pyaudio numpy`)
 
-## Configuring Audio MIDI Setup (macOS)
-
-1. Install **BlackHole 16ch** from the link above.
-2. Open *Audio MIDI Setup* and ensure the BlackHole device runs at 44.1 kHz with
-   at least two channels enabled.
-3. Optionally create a Multi‑Output device that aggregates BlackHole with your
-   speakers so the sender's output can be monitored.
+- `pyaudio` installed (`pip install pyaudio`)
 
 ## Usage
 
-Run the sender in one terminal:
+### Sender
+
+Run the sender to generate white noise and transmit it to a receiver:
 
 ```bash
-python sender.py
+python sender.py --host <receiver_host> --port 50007
 ```
 
-In another terminal run the receiver (which captures from BlackHole and plays
-on the default speakers):
+The sender automatically looks for an output device named `BlackHole 16ch` and
+opens a two-channel 44.1 kHz stream on it. If that device is not present, the
+default output device is used.
+
+The sender also writes the noise to the output device named `BlackHole 16ch` if available.
+
+### Receiver
+
+Start the receiver to listen for the incoming audio stream and play it:
 
 ```bash
-python receiver.py
+python receiver.py --port 50007 --device "BlackHole 16ch"
 ```
 
-Use `--input-device` or `--output-device` to override the device names if
-necessary. Both scripts log basic information about the active devices so you
-can verify the routing.
+Specify another device name with `--device` to use a different output device.
+
+## Configuring Audio MIDI Setup (macOS)
+
+These scripts assume the **BlackHole 16ch** driver is installed. If you already
+have it, you can skip installation. Otherwise you can download it from
+[existential.audio](https://existential.audio/blackhole/).
+
+1. Open **Audio MIDI Setup** from `Applications → Utilities`.
+2. Select `BlackHole 16ch` in the device list.
+3. Set the format to **44100.0 Hz** and **2ch-16 bit Integer**.
+4. Optionally create a multi-output device if you also want to monitor the
 
