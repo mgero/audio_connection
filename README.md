@@ -1,6 +1,6 @@
 # audio_connection
 
-This repository shows how to route audio between two Python programs on macOS using the
+This repository shows how to route audio between a Python program (sender) ad another Python/Unity program (receiver) on macOS using the
 [BlackHole 16ch](https://existential.audio/blackhole/) virtual driver.
 The **sender** generates white noise and writes it to BlackHole. The **receiver**
 reads from the same device, applies a configurable low‑pass filter and plays the result on
@@ -58,6 +58,12 @@ Use different input/output devices with custom filter:
 ```bash
 python receiver.py --input-device "My Input" --output-device "My Output" --cutoff 2000
 ```
+
+## Using the C# Receiver in Unity
+
+1. Create an Audio Object in Unity and add an audio component.
+2. Associate the C# `Receiver` class with the GameObject.
+3. Configure the `Receiver` to listen and direct the audio stream to the GameObject's audio component.
 
 ## Configuring Audio MIDI Setup (macOS)
 
