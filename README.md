@@ -17,6 +17,10 @@ Run the sender to generate white noise and transmit it to a receiver:
 python sender.py --host <receiver_host> --port 50007
 ```
 
+The sender automatically looks for an output device named `BlackHole 16ch` and
+opens a two-channel 44.1 kHz stream on it. If that device is not present, the
+default output device is used.
+
 The sender also writes the noise to the output device named `BlackHole 16ch` if available.
 
 ### Receiver
@@ -40,3 +44,4 @@ have it, you can skip installation. Otherwise you can download it from
 3. Set the format to **44100.0 Hz** and **2ch-16 bit Integer**.
 4. Optionally create a multi-output device if you also want to monitor the
    stream through your speakers.
+

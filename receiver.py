@@ -18,6 +18,7 @@ def find_device_index(p, name):
 
 def main(port, device_name):
     pa = pyaudio.PyAudio()
+
     device_index = None
     if device_name:
         device_index = find_device_index(pa, device_name)
@@ -48,6 +49,8 @@ def main(port, device_name):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Receive audio via UDP using PyAudio.")
     parser.add_argument("--port", type=int, default=50007, help="Port to listen on")
-    parser.add_argument("--device", default=None, help="Output device name, e.g. 'BlackHole 16ch'")
+    parser.add_argument("--device", default="BlackHole 16ch",
+                        help="Output device name, defaults to 'BlackHole 16ch'")
+
     args = parser.parse_args()
     main(args.port, args.device)
