@@ -1,6 +1,6 @@
-import os
-import socket
 import argparse
+import logging
+import numpy as np
 import pyaudio
 
 CHUNK = 1024
@@ -9,43 +9,49 @@ RATE = 44100
 FORMAT = pyaudio.paInt16
 DEVICE_NAME = "BlackHole 16ch"
 
-def find_device_index(p, name):
-    for i in range(p.get_device_count()):
-        info = p.get_device_info_by_index(i)
-        if name.lower() in info['name'].lower() and info['maxOutputChannels'] >= CHANNELS:
+def find_device_index(pa, name):
+    """Return the index of the output device matching name."""
+    for i in range(pa.get_device_count()):
+        info = pa.get_device_info_by_index(i)
+        if name.lower() in info.get('name', '').lower() and info.get('maxOutputChannels', 0) >= CHANNELS:
             return i
     return None
 
-def main(host, port):
+
+def main():
+    parser = argparse.ArgumentParser(description="Stream white noise to BlackHole")
+    parser.add_argument("--device", default=DEVICE_NAME, help="Output device name")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+
     pa = pyaudio.PyAudio()
-    device_index = find_device_index(pa, DEVICE_NAME)
+    device_index = find_device_index(pa, args.device)
+    if device_index is None:
+        logging.warning("Device '%s' not found, using default output", args.device)
 
-    stream = pa.open(format=FORMAT,
-                     channels=CHANNELS,
-                     rate=RATE,
-                     output=True,
-                     output_device_index=device_index,
-                     frames_per_buffer=CHUNK)
+    stream = pa.open(
+        format=FORMAT,
+        channels=CHANNELS,
+        rate=RATE,
+        output=True,
+        output_device_index=device_index,
+        frames_per_buffer=CHUNK,
+    )
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    print(f"Sending noise to {host}:{port}")
+    logging.info("Streaming white noise to device '%s'", args.device)
     try:
         while True:
-            noise = os.urandom(CHUNK * CHANNELS * 2)
+            noise = (np.random.randint(-32768, 32767, CHUNK * CHANNELS, dtype=np.int16)).tobytes()
             stream.write(noise)
-            sock.sendto(noise, (host, port))
     except KeyboardInterrupt:
-        pass
+        logging.info("Interrupted by user")
+
     finally:
         stream.stop_stream()
         stream.close()
         pa.terminate()
-        sock.close()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Send noise via UDP using PyAudio.")
-    parser.add_argument("--host", default="localhost", help="Receiver host")
-    parser.add_argument("--port", type=int, default=50007, help="Receiver port")
-    args = parser.parse_args()
-    main(args.host, args.port)
+    main()
+

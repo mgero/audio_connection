@@ -1,10 +1,15 @@
 # audio_connection
 
-This repository contains two small Python applications for streaming audio noise using the `pyaudio` library. The noise is generated on the sender side and transmitted via UDP. The receiver plays the audio back, optionally using the **BlackHole 16ch** virtual device.
+This repository shows how to route audio between two Python programs on macOS using the
+[BlackHole 16ch](https://existential.audio/blackhole/) virtual driver.
+The **sender** generates white noise and writes it to BlackHole. The **receiver**
+reads from the same device, applies a 1 kHz low‑pass filter and plays the result on
+the system output.
 
 ## Requirements
 
 - Python 3
+
 - `pyaudio` installed (`pip install pyaudio`)
 
 ## Usage
@@ -43,5 +48,4 @@ have it, you can skip installation. Otherwise you can download it from
 2. Select `BlackHole 16ch` in the device list.
 3. Set the format to **44100.0 Hz** and **2ch-16 bit Integer**.
 4. Optionally create a multi-output device if you also want to monitor the
-   stream through your speakers.
 
