@@ -1,6 +1,6 @@
 # audio_connection
 
-This repository shows how to route audio between two Python programs on macOS using the
+This repository shows how to route audio between a Python program (sender) ad another Python/Unity program (receiver) on macOS using the
 [BlackHole 16ch](https://existential.audio/blackhole/) virtual driver.
 The **sender** generates white noise and writes it to BlackHole. The **receiver**
 reads from the same device, applies a configurable low‑pass filter and plays the result on
