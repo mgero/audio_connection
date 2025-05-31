@@ -21,13 +21,27 @@ The sender automatically looks for an output device named `BlackHole 16ch` and
 opens a two-channel 44.1 kHz stream on it. If that device is not present, the
 default output device is used.
 
+The sender also writes the noise to the output device named `BlackHole 16ch` if available.
+
 ### Receiver
 
 Start the receiver to listen for the incoming audio stream and play it:
 
 ```bash
-python receiver.py --port 50007
+python receiver.py --port 50007 --device "BlackHole 16ch"
 ```
 
-By default the receiver also searches for `BlackHole 16ch`. Use `--device` to
-override the output device if needed.
+Specify another device name with `--device` to use a different output device.
+
+## Configuring Audio MIDI Setup (macOS)
+
+These scripts assume the **BlackHole 16ch** driver is installed. If you already
+have it, you can skip installation. Otherwise you can download it from
+[existential.audio](https://existential.audio/blackhole/).
+
+1. Open **Audio MIDI Setup** from `Applications → Utilities`.
+2. Select `BlackHole 16ch` in the device list.
+3. Set the format to **44100.0 Hz** and **2ch-16 bit Integer**.
+4. Optionally create a multi-output device if you also want to monitor the
+   stream through your speakers.
+
