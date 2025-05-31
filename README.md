@@ -59,6 +59,12 @@ Use different input/output devices with custom filter:
 python receiver.py --input-device "My Input" --output-device "My Output" --cutoff 2000
 ```
 
+## Using the C# Receiver in Unity
+
+1. Create an Audio Object in Unity and add an audio component.
+2. Associate the C# `Receiver` class with the GameObject.
+3. Configure the `Receiver` to listen and direct the audio stream to the GameObject's audio component.
+
 ## Configuring Audio MIDI Setup (macOS)
 
 These scripts assume the **BlackHole 16ch** driver is installed. If you already
